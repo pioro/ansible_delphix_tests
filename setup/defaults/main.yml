@@ -1,41 +1,45 @@
 DXLOC: "/home/mprzepiorowski/dxtoolkit2"
 dxtoolkit: False
 VDBDSOURCE_LIST: [ {"dsource": "POST11DS", "vdb": "POST11VDB"} ]
-DELPHIX_ENGINE_IP: marcindlpx.dcenter.delphix.com
-DELPHIX_USER: admin
-DELPHIX_PASSWORD: delphix
+DELPHIX_ENGINE_IP: ajaymongodlpx.dcenter.delphix.com
+DELPHIX_ADMIN_USER: admin
+DELPHIX_ADMIN_PASSWORD: delphix
+API_MAJOR: 1
+API_MINOR: 9
+API_MICRO: 3
 
-DELPHIX_GROUP_NAME: "Untitled"
-# name of database to add as dsource
-DELPHIX_SOURCE_DB_NAME: "POST11DS"
-DELPHIX_SOURCEENV_NAME: "marcinposttgt.dcenter.delphix.com"
-DELPHIX_SOURCEENVUSER_NAME: "postgres"
-DELPHIX_STG_MOUNTBASE: "/mnt/provision/staging"
-DELPHIX_DSOURCE_PARAMETERS: {
-      "delphixInitiatedBackupFlag": true,
-      "keepStagingInSync": false,
-      "postgresPort": 5433,
-      "externalBackup": [],
-      "delphixInitiatedBackup": [
-        {
-          "userName": "delphix",
-          "postgresSourcePort": 5432,
-          "userPass": "delphix",
-          "sourceHostAddress": "marcinpostsrc.dcenter.delphix.com"
-        }
-      ],
-      "configSettingsStg": []
-}
+EDSI_TEMPLATE_NAME: "mongo"
 
-DELPHIX_TARGETENV_NAME: "marcinposttgt.dcenter.delphix.com"
-DELPHIX_TARGETENVUSER_NAME: "postgres"
-DELPHIX_VDB_MOUNTBASE: "/mnt/provision/"
-DELPHIX_VDB_REPO_NAME: "Postgres vFiles (11.1)"
-DELPHIX_VDB_SOURCE_PARAMETERS: {
-      "postgresPort": 6666,
-      "configSettingsStg": []
-}
-DELPHIX_VDB_SOURCECONFIG_PARAMETERS: {}
+
+# DSOURCE PARAMETERS
+DELPHIX_DSOURCE_NAME: "mongostg1"
+DELPHIX_SOURCE_DB_NAME: "Mongo27101_ajaymongosrc"
+DELPHIX_DSOURCE_GROUP_NAME: "Mongo dSources"
+DELPHIX_STG_ENV_NAME: "ajaymongostg"
+DELPHIX_STG_ENVUSER_NAME: "delphix"
+DELPHIX_STG_MOUNTBASE: "/mnt/provision"
+DELPHIX_STG_MOUNTPOINT: "{{ DELPHIX_STG_MOUNTBASE }}/{{ DELPHIX_DSOURCE_NAME }}"
+
+
+DELPHIX_DSOURCE_SOURCECONFIG_PARAMETERS: "{{ lookup('template','{{ EDSI_TEMPLATE_NAME }}_dsource_sourceconfig.j2') }}"
+DELPHIX_DSOURCE_PARAMETERS: "{{ lookup('template','{{ EDSI_TEMPLATE_NAME }}_dsource_parameters.j2') }}"
+
+
+ # VDB PARAMETERS
+DELPHIX_VDB_NAME: "mongovdb1"
+DELPHIX_TARGET_ENV_NAME: "ajaymongotgt"
+DELPHIX_TARGET_ENVUSER_NAME: "delphix"
+DELPHIX_VDB_GROUP_NAME: "Mongo VDBs"
+DELPHIX_VDB_MOUNTBASE: "/mnt/provision"
+DELPHIX_VDB_MOUNTPOINT: "{{ DELPHIX_VDB_MOUNTBASE }}/{{ DELPHIX_VDB_NAME }}"
+DELPHIX_VDB_REPO_NAME: "EDSI MongoDB (v4.0.11)"
+DELPHIX_SRC_DB_NAME: "mongostg1"
+
+
+
+DELPHIX_VDB_SOURCE_PARAMETERS: "{{ lookup('template','{{ EDSI_TEMPLATE_NAME }}_vdb_source_parameters.j2') }}"
+DELPHIX_VDB_SOURCECONFIG_PARAMETERS: "{{ lookup('template','{{ EDSI_TEMPLATE_NAME }}_vdb_sourceconfig_parameters.j2') }}"
+
 
 CREATE_VDB: False
 CREATE_DSOURCE: True
@@ -45,6 +49,4 @@ DELPHIX_SELFSERVICE_CONTAINER: democont
 DELPHIX_SELFSERVICE_SOURCE: "{{ VDBDSOURCE_LIST[0].dsource }}"
 DELPHIX_SELFSERVICE_TARGET: "{{ VDBDSOURCE_LIST[0].vdb }}"
 
-
-# add flag to control adding VDB and dSource
 # provision a VDB from the existing VDB and refresh
