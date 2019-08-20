@@ -80,7 +80,7 @@ curl -s -X POST -k --data @- http://$DELPHIX_ENGINE_IP/resources/json/delphix/so
     "name": "$DELPHIX_SRCCFG_NAME",
     "environmentUser": "$DELPHIX_STG_ENVUSER_REF",
     "repository": "$DELPHIX_STG_REPO_REF",
-    "parameters": {{ DELPHIX_DSOURCE_SOURCECONFIG_PARAMETERS | to_nice_json }}
+    "parameters": {% include EDSI_TEMPLATE_NAME+ "_dsource_sourceconfig.j2" %}
 }
 EOF
 echo
@@ -103,7 +103,7 @@ curl -s -X POST -k --data @- http://$DELPHIX_ENGINE_IP/resources/json/delphix/da
   		 	"type": "AppDataStagedLinkData",
   			"config": "$DELPHIX_SRCCFG_REF",
   			"environmentUser": "$DELPHIX_STG_ENVUSER_REF",
-            "parameters": {{ DELPHIX_DSOURCE_PARAMETERS }},
+            "parameters": {% include EDSI_TEMPLATE_NAME + "_dsource_parameters.j2" %},
   			"stagingEnvironment": "$DELPHIX_STG_ENV_REF",
   			"stagingEnvironmentUser": "$DELPHIX_STG_ENVUSER_REF",
             "stagingMountBase": "$DELPHIX_STG_MOUNTBASE"
