@@ -18,9 +18,10 @@ DELPHIX_GROUP_NAME="{{ DELPHIX_DSOURCE_GROUP_NAME }}"
 # this is a sourceconfig name in Delphix
 DELPHIX_SRCCFG_NAME="{{ DELPHIX_SOURCE_DB_NAME }}"
 
-DELPHIX_ENV_NAME="{{ DELPHIX_STG_ENV_NAME }}"
+DELPHIX_STG_ENV_NAME="{{ DELPHIX_STG_ENV_NAME }}"
 DELPHIX_STG_ENVUSER_NAME="{{ DELPHIX_STG_ENVUSER_NAME }}"
 DELPHIX_STG_MOUNTBASE="{{ DELPHIX_STG_MOUNTBASE }}"
+DELPHIX_STG_REPO_NAME="{{ DELPHIX_STG_REPO_NAME }}"
 
 #cd /home/delphix/OBI_TESTING
 curl -s -X POST -k --data @- http://$DELPHIX_ENGINE_IP/resources/json/delphix/session \
@@ -50,6 +51,12 @@ EOF
 DELPHIX_STG_ENV_REF=`curl -s -X GET http://$DELPHIX_ENGINE_IP/resources/json/delphix/environment -b ~/cookies.txt -H "Content-Type: application/json"| \
 	jq -r --arg DELPHIX_STG_ENV_NAME "$DELPHIX_STG_ENV_NAME" '.result[]|select(.name==$DELPHIX_STG_ENV_NAME)|.reference'`
 
+
+# Get staging repository
+
+DELPHIX_STG_REPO_REF=`curl -s -X GET http://$DELPHIX_ENGINE_IP/resources/json/delphix/repository?environment=$DELPHIX_STG_ENV_REF -b ~/cookies.txt -H "Content-Type: application/json"| \
+	jq -r --arg DELPHIX_STG_REPO_NAME "$DELPHIX_STG_REPO_NAME" '.result[]|select(.name==$DELPHIX_STG_REPO_NAME)|.reference'`
+
 # Get env user reference
 DELPHIX_STG_ENVUSER_REF=`curl -s -X GET http://$DELPHIX_ENGINE_IP/resources/json/delphix/environment/user -b ~/cookies.txt -H "Content-Type: application/json"| \
 	jq -r --arg DELPHIX_STG_ENVUSER_NAME "$DELPHIX_STG_ENVUSER_NAME" --arg DELPHIX_STG_ENV_REF $DELPHIX_STG_ENV_REF '.result[]|select((.name==$DELPHIX_STG_ENVUSER_NAME) and (.environment==$DELPHIX_STG_ENV_REF))|.reference'`
@@ -72,11 +79,12 @@ curl -s -X POST -k --data @- http://$DELPHIX_ENGINE_IP/resources/json/delphix/so
     "type": "AppDataStagedSourceConfig",
     "name": "$DELPHIX_SRCCFG_NAME",
     "environmentUser": "$DELPHIX_STG_ENVUSER_REF",
-    "repository": "APPDATA_REPOSITORY-1",
+    "repository": "$DELPHIX_STG_REPO_REF",
     "parameters": {{ DELPHIX_DSOURCE_SOURCECONFIG_PARAMETERS | to_nice_json }}
 }
 EOF
 echo
+
 
 # Get group
 DELPHIX_GROUP_REF=`curl -s -X GET http://$DELPHIX_ENGINE_IP/resources/json/delphix/group -b ~/cookies.txt -H "Content-Type: application/json"| \
@@ -95,9 +103,9 @@ curl -s -X POST -k --data @- http://$DELPHIX_ENGINE_IP/resources/json/delphix/da
   		 	"type": "AppDataStagedLinkData",
   			"config": "$DELPHIX_SRCCFG_REF",
   			"environmentUser": "$DELPHIX_STG_ENVUSER_REF",
-            "parameters": {{ DELPHIX_DSOURCE_PARAMETERS | to_nice_json }},
+            "parameters": {{ DELPHIX_DSOURCE_PARAMETERS }},
   			"stagingEnvironment": "$DELPHIX_STG_ENV_REF",
-  			"stagingEnvironmentUser": "$DELPHIX_ENVUSER",
+  			"stagingEnvironmentUser": "$DELPHIX_STG_ENVUSER_REF",
             "stagingMountBase": "$DELPHIX_STG_MOUNTBASE"
   		}
 }
