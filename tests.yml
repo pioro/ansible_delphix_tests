@@ -4,7 +4,7 @@
 
    roles:
        - setup
-      #  - dSource
-      #  - vdb
-      #  - snapshot_tests
-      #  - selfservice
+       - dSource
+       - vdb
+       - snapshot_tests
+       - selfservice

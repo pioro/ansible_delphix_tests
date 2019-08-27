@@ -43,8 +43,16 @@
      loop: "{{ dsourcecheck.results }}"
 
    - block:
+        # - name: register time
+        #   set_fact: time="{{ ansible_date_time.date + \" \" + ansible_date_time.time }}"
+
+        - name: get engine time
+          delegate_to: 127.0.0.1
+          shell: '"{{ DXLOC }}/dx_get_engine_time"'
+          register: output_engine_time
+
         - name: register time
-          set_fact: time="{{ ansible_date_time.date + \" \" + ansible_date_time.time }}"
+          set_fact: time={{ output_engine_time.stdout }}
 
         - name: Add dSource (shell)
           delegate_to: 127.0.0.1
@@ -54,11 +62,18 @@
         - name: Check for job
           delegate_to: 127.0.0.1
           shell: |
-             STATUS=`"{{ DXLOC }}/dx_get_jobs" -dbname "{{ item.dsource }}" -format csv -nohead -state COMPLETED -st "{{ time }}" | grep -v "Object not found" | wc -l`
-             if [ "${STATUS}" = "0" ]; then
-               exit 1;
+             STATUS=`"{{ DXLOC }}/dx_get_jobs" -dbname "{{ item.dsource }}" -format csv -nohead -state COMPLETED -st "{{ time }}"`
+             if [ $? !=  0 ]; then
+                echo $STATUS;
+                exit 1;
+             fi
+             STATUSNO=`echo $STATUS | grep -v "Object not found" | wc -l`
+             if [ "${STATUSNO}" = "0" ]; then
+                exit 1;
              fi;
           loop: "{{ VDBDSOURCE_LIST }}"
+          register: cfjresult
+          failed_when: (cfjresult.rc != 0) or (cfjresult.stderr != "")
 
         - name: Wait for job
           delegate_to: 127.0.0.1

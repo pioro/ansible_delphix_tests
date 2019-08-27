@@ -1,14 +1,13 @@
- {
-      # common parameters
-      "mountPath":"{{ DELPHIX_STG_MOUNTPOINT }}",
+{
       "dSourceType":"Staging",
-      "mongoHost":"jakitam.host",
-      "mongoPort":"666",
+      "mongoHost":"{{ MONGO_STG_HOST_NAME }}",
+      "mongoPort": {{ MONGO_STG_PORT }},
       "bindIP":"0.0.0.0",
-      "keyfilePath":"/path",
+      "keyfilePath":"{{ MONGO_STG_KEYFILE }}",
       "storageEngine":"wiredTiger",
       "oplogSize":1024,
       "journalInterval":30,
-      "mongoDBUser":"clusteradmin",
-      "mongoDBPassword":"delphix"
+      "mountPath":"{{ DELPHIX_STG_MOUNTPOINT }}",
+      "mongoDBUser":"{{ MONGO_SRC_USER }}",
+      "mongoDBPassword":"{{ MONGO_SRC_PASSWORD }}"
 }

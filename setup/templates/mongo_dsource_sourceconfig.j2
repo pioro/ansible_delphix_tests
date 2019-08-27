@@ -1,10 +1,8 @@
 {
-        # common setting
         "prettyName": "{{ DELPHIX_SOURCE_DB_NAME }}",
+        "dbPath": "{{ MONGO_SRC_DBPATH }}",
+        "replicaSet": "{{ MONGO_SRC_REPLICASET }}",
         "discoveryType": "Manual",
-        "dbPath": "/u01/mongodb/data/delphix_rs2710/rs1/db",
-        # db specifig settings
-        "replicaSet": "delphix_rs2710",
-        "mongoPort": 27101,
-        "mongoHost": "ajaymongosrc.dlpxdc.co"
+        "mongoPort": {{ MONGO_SRC_PORT }},
+        "mongoHost": "{{ MONGO_SRC_HOST_NAME }}"
 }

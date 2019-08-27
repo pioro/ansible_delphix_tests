@@ -20,8 +20,8 @@ DELPHIX_SRCCFG_NAME="{{ DELPHIX_SOURCE_DB_NAME }}"
 
 DELPHIX_STG_ENV_NAME="{{ DELPHIX_STG_ENV_NAME }}"
 DELPHIX_STG_ENVUSER_NAME="{{ DELPHIX_STG_ENVUSER_NAME }}"
-DELPHIX_STG_MOUNTBASE="{{ DELPHIX_STG_MOUNTBASE }}"
 DELPHIX_STG_REPO_NAME="{{ DELPHIX_STG_REPO_NAME }}"
+DELPHIX_STG_MOUNTBASE="{{ DELPHIX_STG_MOUNTBASE }}"
 
 #cd /home/delphix/OBI_TESTING
 curl -s -X POST -k --data @- http://$DELPHIX_ENGINE_IP/resources/json/delphix/session \
@@ -66,12 +66,20 @@ DELPHIX_SRCCFG_REF=`curl -s -X GET http://$DELPHIX_ENGINE_IP/resources/json/delp
 	jq -r --arg DELPHIX_SRCCFG_NAME "$DELPHIX_SRCCFG_NAME" '.result[]|select(.name==$DELPHIX_SRCCFG_NAME)|.reference'`
 
 
-# Delete SourceConfig if already exists
-curl -s -X POST -k --data @- http://$DELPHIX_ENGINE_IP/resources/json/delphix/sourceconfig/${DELPHIX_SRCCFG_REF}/delete -b ~/cookies.txt -H "Content-Type: application/json" <<EOF
-{}
-EOF
-echo
 
+if [[ ! -z $DELPHIX_SRCCFG_REF ]]; then
+
+    # Delete SourceConfig if already exists
+    delreslt=`curl -s -X POST -k --data @- http://$DELPHIX_ENGINE_IP/resources/json/delphix/sourceconfig/${DELPHIX_SRCCFG_REF}/delete -b ~/cookies.txt -H "Content-Type: application/json" <<EOF
+    {}
+    EOF`
+
+    if ( echo $delreslt | grep -i "ERROR" > /dev/null ); then
+        echo $delreslt
+        exit 1
+    fi
+
+fi
 
 # Create SourceConfig
 curl -s -X POST -k --data @- http://$DELPHIX_ENGINE_IP/resources/json/delphix/sourceconfig -b ~/cookies.txt -H "Content-Type: application/json" <<EOF
@@ -83,7 +91,7 @@ curl -s -X POST -k --data @- http://$DELPHIX_ENGINE_IP/resources/json/delphix/so
     "parameters": {% include EDSI_TEMPLATE_NAME+ "_dsource_sourceconfig.j2" %}
 }
 EOF
-echo
+echo $?
 
 
 # Get group
@@ -100,13 +108,15 @@ curl -s -X POST -k --data @- http://$DELPHIX_ENGINE_IP/resources/json/delphix/da
         "name": "$DELPHIX_DSOURCE_NAME",
         "group": "$DELPHIX_GROUP_REF",
         "linkData": {
-  		 	"type": "AppDataStagedLinkData",
-  			"config": "$DELPHIX_SRCCFG_REF",
-  			"environmentUser": "$DELPHIX_STG_ENVUSER_REF",
-            "parameters": {% include EDSI_TEMPLATE_NAME + "_dsource_parameters.j2" %},
-  			"stagingEnvironment": "$DELPHIX_STG_ENV_REF",
-  			"stagingEnvironmentUser": "$DELPHIX_STG_ENVUSER_REF",
-            "stagingMountBase": "$DELPHIX_STG_MOUNTBASE"
+  		 	"type": "AppDataStagedLinkData"
+  			,"config": "$DELPHIX_SRCCFG_REF"
+  			,"environmentUser": "$DELPHIX_STG_ENVUSER_REF"
+            ,"parameters": {% include EDSI_TEMPLATE_NAME + "_dsource_parameters.j2" %}
+  			,"stagingEnvironment": "$DELPHIX_STG_ENV_REF"
+  			,"stagingEnvironmentUser": "$DELPHIX_STG_ENVUSER_REF"
+            {% if EDSI_TEMPLATE_NAME != 'mongo' %}
+            ,"stagingMountBase": "$DELPHIX_STG_MOUNTBASE"
+            {% endif %}
   		}
 }
 EOF

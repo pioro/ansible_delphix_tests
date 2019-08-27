@@ -64,9 +64,14 @@
       shell: '"{{ DXLOC }}/dx_get_js_bookmarks" -bookmark_name "cont_now" -template_name "{{ DELPHIX_SELFSERVICE_TEMPLATE }}" -container_name "{{ DELPHIX_SELFSERVICE_CONTAINER }}"'
       tags: container_ops
 
-    - name: register time
+    - name: get engine time
       delegate_to: 127.0.0.1
-      set_fact: time="{{ lookup('pipe', 'date +\"%Y-%m-%d %H:%M:%S\"') }}"
+      shell: '"{{ DXLOC }}/dx_get_engine_time"'
+      register: output_engine_time
+      tags: cont_time, temp_time
+
+    - name: register time
+      set_fact: time={{ output_engine_time.stdout }}
       tags: cont_time, temp_time
 
     - name: Restore to JS bookmark

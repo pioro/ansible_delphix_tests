@@ -1,52 +1,60 @@
 DXLOC: "/home/mprzepiorowski/dxtoolkit2"
 dxtoolkit: False
-VDBDSOURCE_LIST: [ {"dsource": "pioromysql", "vdb": "mysqlvdb"} ]
-DELPHIX_ENGINE_IP: marcindlpx.dcenter.delphix.com
+DELPHIX_ENGINE_IP: ajaymongodlpx.dlpxdc.co
 DELPHIX_ADMIN_USER: admin
 DELPHIX_ADMIN_PASSWORD: delphix
 API_MAJOR: 1
 API_MINOR: 9
 API_MICRO: 3
 
-EDSI_TEMPLATE_NAME: "mysql"
+EDSI_TEMPLATE_NAME: "mongo"
 
 
-# DSOURCE PARAMETERS
-DELPHIX_DSOURCE_NAME: "pioromysql"
-DELPHIX_SOURCE_DB_NAME: "pioromysql"
-DELPHIX_DSOURCE_GROUP_NAME: "test"
-DELPHIX_STG_ENV_NAME: "marcinmysql.dcenter.delphix.com"
+# DSOURCE PARAMETERS for mongo 
+DELPHIX_DSOURCE_NAME: "mongostg1"
+DELPHIX_SOURCE_DB_NAME: "Mongo27101_ajaymongosrc"
+DELPHIX_DSOURCE_GROUP_NAME: "Mongo dSources"
+DELPHIX_STG_ENV_NAME: "ajaymongostg"
 DELPHIX_STG_ENVUSER_NAME: "delphix"
+DELPHIX_STG_ENVUSER_PWD: "delphix"
 DELPHIX_STG_MOUNTBASE: "/mnt/provision"
 DELPHIX_STG_MOUNTPOINT: "{{ DELPHIX_STG_MOUNTBASE }}/{{ DELPHIX_DSOURCE_NAME }}"
-DELPHIX_STG_REPO_NAME: "/usr/sbin (MySQL Community Server (GPL)) 5.7.27"
+DELPHIX_STG_REPO_NAME: "EDSI MongoDB (v4.0.11)"
 
-DELPHIX_DSOURCE_SOURCECONFIG_PARAMETERS: "{{ lookup('template','{{ EDSI_TEMPLATE_NAME }}_dsource_sourceconfig.j2') }}"
-DELPHIX_DSOURCE_PARAMETERS: "{{ lookup('template','{{ EDSI_TEMPLATE_NAME }}_dsource_parameters.j2') }}"
+# # DSOURCE PARAMETERS for mysql 
+# DELPHIX_DSOURCE_NAME: "pioromysql"
+# DELPHIX_SOURCE_DB_NAME: "pioromysql"
+# DELPHIX_DSOURCE_GROUP_NAME: "test"
+# DELPHIX_STG_ENV_NAME: "marcinmysql.dcenter.delphix.com"
+# DELPHIX_STG_ENVUSER_NAME: "delphix"
+# DELPHIX_STG_MOUNTBASE: "/mnt/provision"
+# DELPHIX_STG_MOUNTPOINT: "{{ DELPHIX_STG_MOUNTBASE }}/{{ DELPHIX_DSOURCE_NAME }}"
+# DELPHIX_STG_REPO_NAME: "/usr/sbin (MySQL Community Server (GPL)) 5.7.27"
 
 
- # VDB PARAMETERS
-DELPHIX_VDB_NAME: "mysqlvdb"
-DELPHIX_TARGET_ENV_NAME: "marcinmysql.dcenter.delphix.com"
+
+# VDB PARAMETERS
+DELPHIX_VDB_NAME: "marcintest"
+DELPHIX_TARGET_ENV_NAME: "ajaymongotgt"
 DELPHIX_TARGET_ENVUSER_NAME: "delphix"
-DELPHIX_VDB_GROUP_NAME: "test"
+DELPHIX_VDB_GROUP_NAME: "Mongo VDBs"
 DELPHIX_VDB_MOUNTBASE: "/mnt/provision"
 DELPHIX_VDB_MOUNTPOINT: "{{ DELPHIX_VDB_MOUNTBASE }}/{{ DELPHIX_VDB_NAME }}"
-DELPHIX_VDB_REPO_NAME: "/usr/sbin (MySQL Community Server (GPL)) 5.7.27"
-DELPHIX_SRC_DB_NAME: "pioromysql"
+DELPHIX_VDB_REPO_NAME: "EDSI MongoDB (v4.0.11)"
+DELPHIX_SRC_DB_NAME: "mongostg1"
 
 
-
-DELPHIX_VDB_SOURCE_PARAMETERS: "{{ lookup('template','{{ EDSI_TEMPLATE_NAME }}_vdb_source_parameters.j2') }}"
-DELPHIX_VDB_SOURCECONFIG_PARAMETERS: "{{ lookup('template','{{ EDSI_TEMPLATE_NAME }}_vdb_sourceconfig_parameters.j2') }}"
-
-
-CREATE_VDB: False
+CREATE_VDB: True
 CREATE_DSOURCE: True
 
 DELPHIX_SELFSERVICE_TEMPLATE: demotemplate
 DELPHIX_SELFSERVICE_CONTAINER: democont
-DELPHIX_SELFSERVICE_SOURCE: "{{ VDBDSOURCE_LIST[0].dsource }}"
-DELPHIX_SELFSERVICE_TARGET: "{{ VDBDSOURCE_LIST[0].vdb }}"
+
 
 # provision a VDB from the existing VDB and refresh
+# NOT EDIT BELOW
+
+DELPHIX_VDB_TEMP_SC: "{{ lookup('template','{{ EDSI_TEMPLATE_NAME }}_vdb_sourceconfig_parameters.j2') }}"
+VDBDSOURCE_LIST: [ {"dsource": "{{ DELPHIX_DSOURCE_NAME }}", "vdb": "{{ DELPHIX_VDB_NAME }}"} ]
+DELPHIX_SELFSERVICE_SOURCE: "{{ VDBDSOURCE_LIST[0].dsource }}"
+DELPHIX_SELFSERVICE_TARGET: "{{ VDBDSOURCE_LIST[0].vdb }}"

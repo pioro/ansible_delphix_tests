@@ -29,8 +29,13 @@
      tags: deletevdb
 
    - block:
+        - name: get engine time
+          delegate_to: 127.0.0.1
+          shell: '"{{ DXLOC }}/dx_get_engine_time"'
+          register: output_engine_time
+
         - name: register time
-          set_fact: time="{{ ansible_date_time.date + \" \" + ansible_date_time.time }}"
+          set_fact: time={{ output_engine_time.stdout }}
 
         - name: Provision a VDB (shell)
           delegate_to: 127.0.0.1

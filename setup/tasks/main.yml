@@ -1,5 +1,13 @@
 ---
 
+   - name: Include plugin vars
+     include_vars: "../defaults/{{ EDSI_TEMPLATE_NAME }}.yml"
+
+   - name: VDB Source config
+     set_fact: 
+        DELPHIX_VDB_SOURCECONFIG_PARAMETERS: 1
+     when: DELPHIX_VDB_TEMP_SC|length!=0 
+
    - name: create dxtoolkit configuration
      template: src=dxtools.conf.j2 dest="{{ DXLOC }}/dxtools.conf" mode=755
 

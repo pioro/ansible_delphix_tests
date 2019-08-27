@@ -12,7 +12,7 @@ DELPHIX_ENGINE="{{ DELPHIX_ENGINE_IP }}"
 DELPHIX_ADMIN_USER="{{ DELPHIX_ADMIN_USER }}"
 DELPHIX_ADMIN_PASSWORD="{{ DELPHIX_ADMIN_PASSWORD }}"
 
-DELPHIX_VDB_NAME=$1
+DELPHIX_VDB_NAME={{ DELPHIX_VDB_NAME }}
 DSOURCE_NAME={{ DELPHIX_SRC_DB_NAME }}
 
 DELPHIX_GROUP_NAME="{{ DELPHIX_VDB_GROUP_NAME }}"
@@ -93,21 +93,23 @@ curl -s -X POST -k --data @- http://$DELPHIX_ENGINE/resources/json/delphix/datab
 			"postStop":[],
 			"type":"VirtualSourceOperations"
 		},
-    "parameters": {{ DELPHIX_VDB_SOURCE_PARAMETERS | to_nice_json }},
+        "parameters": {% include EDSI_TEMPLATE_NAME + "_vdb_source_parameters.j2" %},
 		"additionalMountPoints":[],
 		"allowAutoVDBRestartOnHostReboot":false,
 		"name":"$DELPHIX_VDB_NAME",
 		"type":"AppDataVirtualSource"
     },
     "sourceConfig": {
-        "type": "AppDataDirectSourceConfig",
-        "name": "$DELPHIX_VDB_NAME",
-        "repository": "$DELPHIX_REPOSITORY_REF",
-        "path": "$DELPHIX_VDB_MOUNTPOINT",
-        "linkingEnabled": true,
-        "environmentUser": "$DELPHIX_ENVUSER_REF"
-        {% if DELPHIX_VDB_SOURCECONFIG_PARAMETERS|length  %}
-        ,"parameters": "{{ DELPHIX_VDB_SOURCECONFIG_PARAMETERS | to_nice_json }}"
+        "type": "AppDataDirectSourceConfig"
+        ,"name": "$DELPHIX_VDB_NAME"
+        ,"repository": "$DELPHIX_REPOSITORY_REF"
+        {% if EDSI_TEMPLATE_NAME != 'mongo' %}
+        "path": "$DELPHIX_VDB_MOUNTPOINT"
+        {% endif %}
+        ,"linkingEnabled": true
+        ,"environmentUser": "$DELPHIX_ENVUSER_REF"
+        {% if DELPHIX_VDB_SOURCECONFIG_PARAMETERS is defined  %}
+        ,"parameters": {% include EDSI_TEMPLATE_NAME + "_vdb_sourceconfig_parameters.j2" %}
         {% endif %}
     },
     "timeflowPointParameters": {

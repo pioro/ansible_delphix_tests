@@ -1,13 +1,11 @@
 {
-      # common parameters
       "mountPath": "{{ DELPHIX_VDB_MOUNTPOINT }}",
-      # mongo specific paramaters
       "journalInterval": 30,
-      "mongoPort": "667",
+      "mongoPort": {{ MONGO_VDB_PORT }},
       "oplogSize": 1024,
-      "mongoDBUser": "clusteradmin",
-      "mongoDBPassword": "delphix",
+      "mongoDBUser": "{{ MONGO_VDB_USER }}",
+      "mongoDBPassword": "{{ MONGO_VDB_PASSWORD }}",
       "enableKeyAuth": "N",
-      "keyfilePath": "",
+      "keyfilePath": "{{ MONGO_VDB_KEYFILE }}",
       "bindIP": "0.0.0.0"
 }
