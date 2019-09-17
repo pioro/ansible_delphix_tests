@@ -56,7 +56,7 @@
 
         - name: Add dSource (shell)
           delegate_to: 127.0.0.1
-          shell: "{{ playbook_dir }}/adddsource.sh {{ item.dsource }}"
+          shell: "{{ playbook_dir }}/tmp/adddsource.sh {{ item.dsource }}"
           loop: "{{ VDBDSOURCE_LIST }}"
 
         - name: Check for job

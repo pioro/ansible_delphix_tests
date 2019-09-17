@@ -104,7 +104,7 @@ curl -s -X POST -k --data @- http://$DELPHIX_ENGINE/resources/json/delphix/datab
         ,"name": "$DELPHIX_VDB_NAME"
         ,"repository": "$DELPHIX_REPOSITORY_REF"
         {% if EDSI_TEMPLATE_NAME != 'mongo' %}
-        "path": "$DELPHIX_VDB_MOUNTPOINT"
+        ,"path": "$DELPHIX_VDB_MOUNTPOINT"
         {% endif %}
         ,"linkingEnabled": true
         ,"environmentUser": "$DELPHIX_ENVUSER_REF"

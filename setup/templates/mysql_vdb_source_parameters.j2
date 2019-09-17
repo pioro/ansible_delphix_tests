@@ -1,8 +1,8 @@
 {
-    "vdbPass":"delphix",
-    "baseDir":"/usr",
-    "myCnf":"/home/delphix/my_vdb.cnf",
-    "vdbConn":"delphix",
-    "port":"6667",
+    "vdbPass":"{{ MYSQL_VDB_PASS }}",
+    "baseDir":"{{ MYSQL_VDB_BASEDIR }}",
+    "myCnf":"{{ MYSQL_VDB_CNFFILE }}",
+    "vdbConn":"{{ MYSQL_VDB_USER }}",
+    "port":"{{ DELPHIX_VDB_PORT }}",
     "config_settings_prov":[]
 }

@@ -20,19 +20,6 @@
       ignore_errors: yes
       tags: template
 
-    - block:
-       - name: Get database info
-         delegate_to: 127.0.0.1
-         shell: '"{{ DXLOC }}/dx_get_db_env" -name {{ DELPHIX_SELFSERVICE_SOURCE }} -config -nohead -format csv | awk -F, ''{ printf("%s, {{ DELPHIX_SELFSERVICE_SOURCE }}, %s, 1", $4,$8); }'''
-         register: ss_create_template
-
-       - name: Create template
-         delegate_to: 127.0.0.1
-         shell: '"{{ DXLOC }}/dx_ctl_js_template" -source "{{ ss_create_template.stdout }}"  -action create -template_name "{{ DELPHIX_SELFSERVICE_TEMPLATE }}"'
-
-      when: ss_template.rc !=0
-      tags: template
-
     - name: Check if container is already provisioned
       delegate_to: 127.0.0.1
       shell: '"{{ DXLOC }}/dx_get_js_containers" -template_name "{{ DELPHIX_SELFSERVICE_TEMPLATE }}" -container_name "{{ DELPHIX_SELFSERVICE_CONTAINER }}"'
@@ -40,18 +27,36 @@
       ignore_errors: yes
       tags: container
 
-    - block:
-       - name: Get database info
-         delegate_to: 127.0.0.1
-         shell: '"{{ DXLOC }}/dx_get_db_env" -name {{ DELPHIX_SELFSERVICE_TARGET }} -nohead -format csv | awk -F, ''{ printf("%s,%s", $4,$3); }'''
-         register: ss_create_container
+    - name: Delete container
+      delegate_to: 127.0.0.1
+      shell: '"{{ DXLOC }}/dx_ctl_js_container" -template_name "{{ DELPHIX_SELFSERVICE_TEMPLATE }}" -container_name "{{ DELPHIX_SELFSERVICE_CONTAINER }}" -action delete -dropvdb no'
+      when: ss_container.rc == 0
+      tags: container 
 
-       - name: Create container
-         delegate_to: 127.0.0.1
-         shell: '"{{ DXLOC }}/dx_ctl_js_container" -action create -container_name "{{ DELPHIX_SELFSERVICE_CONTAINER }}" -container_def "{{ ss_create_container.stdout }}" -template_name "{{ DELPHIX_SELFSERVICE_TEMPLATE }}"'
+    - name: Delete template
+      delegate_to: 127.0.0.1
+      shell: '"{{ DXLOC }}/dx_ctl_js_template" -template_name "{{ DELPHIX_SELFSERVICE_TEMPLATE }}" -action delete'
+      register: ss_template
+      when: ss_template.rc == 0
+      tags: template
 
-      when: ss_container.rc !=0
-      tags: container
+    - name: Get database info
+      delegate_to: 127.0.0.1
+      shell: '"{{ DXLOC }}/dx_get_db_env" -name {{ DELPHIX_SELFSERVICE_SOURCE }} -config -nohead -format csv | awk -F, ''{ printf("%s, {{ DELPHIX_SELFSERVICE_SOURCE }}, {{ DELPHIX_SELFSERVICE_SOURCE }}, 1", $4); }'''
+      register: ss_create_template
+
+    - name: Create template
+      delegate_to: 127.0.0.1
+      shell: '"{{ DXLOC }}/dx_ctl_js_template" -source "{{ ss_create_template.stdout }}"  -action create -template_name "{{ DELPHIX_SELFSERVICE_TEMPLATE }}"'
+
+    - name: Get database info
+      delegate_to: 127.0.0.1
+      shell: '"{{ DXLOC }}/dx_get_db_env" -name {{ DELPHIX_SELFSERVICE_TARGET }} -nohead -format csv | awk -F, ''{ printf("%s,%s", $4,$3); }'''
+      register: ss_create_container
+
+    - name: Create container
+      delegate_to: 127.0.0.1
+      shell: '"{{ DXLOC }}/dx_ctl_js_container" -action create -container_name "{{ DELPHIX_SELFSERVICE_CONTAINER }}" -container_def "{{ ss_create_container.stdout }}" -template_name "{{ DELPHIX_SELFSERVICE_TEMPLATE }}"'
 
     - name: Create JS bookmark
       delegate_to: 127.0.0.1
@@ -136,3 +141,11 @@
       delegate_to: 127.0.0.1
       shell: '"{{ DXLOC }}/dx_ctl_js_bookmarks" -bookmark_name "cont_now" -action remove -template_name "{{ DELPHIX_SELFSERVICE_TEMPLATE }}" -container_name "{{ DELPHIX_SELFSERVICE_CONTAINER }}"'
       tags: container_ops
+
+    - name: Adding JS bookmarks using snapshots in template
+      delegate_to: 127.0.0.1
+      shell: '"{{ DXLOC }}/dx_ctl_js_bookmarks" -bookmark_name "pre" -action create -snapshots all -template_name "{{ DELPHIX_SELFSERVICE_TEMPLATE }}" -source "{{ DELPHIX_SELFSERVICE_SOURCE }}" '
+      tags: container_ops
+
+
+

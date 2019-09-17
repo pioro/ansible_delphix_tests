@@ -21,7 +21,7 @@ DELPHIX_SRCCFG_NAME="{{ DELPHIX_SOURCE_DB_NAME }}"
 DELPHIX_STG_ENV_NAME="{{ DELPHIX_STG_ENV_NAME }}"
 DELPHIX_STG_ENVUSER_NAME="{{ DELPHIX_STG_ENVUSER_NAME }}"
 DELPHIX_STG_REPO_NAME="{{ DELPHIX_STG_REPO_NAME }}"
-DELPHIX_STG_MOUNTBASE="{{ DELPHIX_STG_MOUNTBASE }}"
+DELPHIX_STG_MOUNTBASE="{{ DELPHIX_STG_MOUNTPOINT }}"
 
 #cd /home/delphix/OBI_TESTING
 curl -s -X POST -k --data @- http://$DELPHIX_ENGINE_IP/resources/json/delphix/session \
@@ -72,7 +72,7 @@ if [[ ! -z $DELPHIX_SRCCFG_REF ]]; then
     # Delete SourceConfig if already exists
     delreslt=`curl -s -X POST -k --data @- http://$DELPHIX_ENGINE_IP/resources/json/delphix/sourceconfig/${DELPHIX_SRCCFG_REF}/delete -b ~/cookies.txt -H "Content-Type: application/json" <<EOF
     {}
-    EOF`
+EOF`
 
     if ( echo $delreslt | grep -i "ERROR" > /dev/null ); then
         echo $delreslt
