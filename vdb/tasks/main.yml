@@ -29,18 +29,24 @@
      tags: deletevdb
 
    - block:
+        - name: get engine time
+          delegate_to: 127.0.0.1
+          shell: '"{{ DXLOC }}/dx_get_engine_time"'
+          register: output_engine_time
+
         - name: register time
-          set_fact: time="{{ ansible_date_time.date + \" \" + ansible_date_time.time }}"
+          set_fact: time={{ output_engine_time.stdout }}
 
         - name: Provision a VDB (shell)
           delegate_to: 127.0.0.1
-          shell: "{{ playbook_dir }}/addvdb.sh {{ item.vdb }} {{ item.dsource }}"
+          shell: "{{ playbook_dir }}/tmp/addvdb.sh {{ item.vdb }} {{ item.dsource }}"
           loop: "{{ VDBDSOURCE_LIST }}"
 
         - name: Wait for job
           delegate_to: 127.0.0.1
           shell: |
              STATUS=`"{{ DXLOC }}/dx_get_jobs" -dbname "{{ item.vdb }}" -format csv -nohead -state COMPLETED -st "{{ time }}" | wc -l`
+             echo $STATUS
              if [ "${STATUS}" != "2" ]; then
                exit 1;
              fi;
