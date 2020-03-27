@@ -1,0 +1,12 @@
+MYSQL_SRC_BASEDIR: "/usr"
+
+MYSQL_STG_CNFFILE: "/home/delphix/my_stg.cnf"
+MYSQL_STG_USER: "delphix"
+MYSQL_STG_PASS: "xxxxxx"
+
+MYSQL_VDB_BASEDIR: "/usr"
+MYSQL_VDB_CNFFILE: "my_vdb.cnf"
+MYSQL_VDB_USER: "delphix"
+MYSQL_VDB_PASS: "xxxxxxx"
+
+

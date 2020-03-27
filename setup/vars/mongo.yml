@@ -1,0 +1,14 @@
+MONGO_SRC_PORT: 27101
+MONGO_SRC_HOST_NAME: "ajaymongosrc.x.x"
+MONGO_SRC_DBPATH: "/u01/mongodb/data/delphix_rs2710/rs1/db"
+MONGO_SRC_REPLICASET: "delphix_rs2710"
+MONGO_SRC_USER: "clusteradmin"
+MONGO_SRC_PASSWORD: "xxxxxxx"
+
+MONGO_STG_HOST_NAME: "ajaymongostg.x.x"
+MONGO_STG_KEYFILE: "/home/delphix/keyfile"
+
+MONGO_VDB_HOST_NAME: "ajaymongotgt.dlpxdc.co"
+MONGO_VDB_KEYFILE: "/home/delphix/keyfile"
+MONGO_VDB_USER: "clusteradmin"
+MONGO_VDB_PASSWORD: "xxxxxxx"
